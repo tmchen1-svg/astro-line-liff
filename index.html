@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設定星盤資料</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; background-color: #f5f5f5; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        label { display: block; margin: 15px 0 5px; color: #666; font-size: 14px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; margin-top: 30px; background-color: #06c755; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:active { background-color: #05b34c; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🔮 開啟您的魔法旅程</h2>
+        
+        <label>📅 出生日期</label>
+        <input type="date" id="date" required>
+        
+        <label>⏰ 出生時間</label>
+        <input type="time" id="time" required>
+        
+        <label>📍 出生城市</label>
+        <input type="text" id="city" placeholder="例如：台北市" value="台北市">
+
+        <button id="btn" onclick="send()">確認送出</button>
+    </div>
+
+    <script>
+        // 這裡等一下要填入您的 LIFF ID
+        const LIFF_ID = "YOUR_LIFF_ID_HERE";
+
+        // 初始化
+        liff.init({ liffId: LIFF_ID }).catch(err => {
+            alert("啟動失敗，請確認是在 LINE 中開啟");
+        });
+
+        function send() {
+            const d = document.getElementById('date').value;
+            const t = document.getElementById('time').value;
+            const c = document.getElementById('city').value;
+
+            if (!d || !t || !c) {
+                alert("請完整填寫資料喔！");
+                return;
+            }
+
+            // 這裡就是魔法！幫使用者發送文字指令
+            // 格式與您 n8n 設定的完全一樣
+            const command = `/birth ${d} ${t} ${c}`;
+
+            liff.sendMessages([{ type: 'text', text: command }])
+                .then(() => liff.closeWindow())
+                .catch(err => alert("發送失敗，請確認您已加入好友並允許傳訊"));
+        }
+    </script>
+</body>
+</html>
