@@ -40,24 +40,36 @@
             alert("啟動失敗，請確認是在 LINE 中開啟");
         });
 
-        function send() {
-            const d = document.getElementById('date').value;
-            const t = document.getElementById('time').value;
-            const c = document.getElementById('city').value;
+    function send() {
+    const d = document.getElementById('date').value;
+    const t = document.getElementById('time').value; // 這裡是 24 小時制格式，如 "22:55"
+    const c = document.getElementById('city').value;
 
-            if (!d || !t || !c) {
-                alert("請完整填寫資料喔！");
-                return;
-            }
+    if (!d || !t || !c) {
+        alert("請完整填寫資料喔！");
+        return;
+    }
 
-            // 這裡就是魔法！幫使用者發送文字指令
-            // 格式與您 n8n 設定的完全一樣
-            const command = `/birth ${d} ${t} ${c}`;
+    // --- 新增：格式化時間給使用者再次確認 ---
+    const [hour, minute] = t.split(':');
+    const h = parseInt(hour);
+    const period = h >= 12 ? "下午 (PM)" : "上午 (AM)";
+    const displayH = h > 12 ? h - 12 : h;
+    
+    // 彈出確認視窗，明確顯示「上午/下午」
+    const confirmMsg = `您選擇的是：\n${d}\n${period} ${displayH}:${minute}\n${c}\n\n確認送出嗎？`;
+    
+    if (!confirm(confirmMsg)) {
+        return; // 使用者按取消，就不送出
+    }
+    // --------------------------------------
 
-            liff.sendMessages([{ type: 'text', text: command }])
-                .then(() => liff.closeWindow())
-                .catch(err => alert("發送失敗，請確認您已加入好友並允許傳訊"));
-        }
+    const command = `/birth ${d} ${t} ${c}`;
+
+    liff.sendMessages([{ type: 'text', text: command }])
+        .then(() => liff.closeWindow())
+        .catch(err => alert("發送失敗，請確認您已加入好友並允許傳訊"));
+}
     </script>
 </body>
 </html>
